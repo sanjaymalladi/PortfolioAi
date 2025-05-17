@@ -1,212 +1,147 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bell, Trash2, Edit, Plus } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 
-interface JobAlert {
-  id: number;
-  keywords: string;
-  sources: string[];
-  frequency: string;
-  createdAt: Date;
+interface JobResult {
+  job_id: string;
+  employer_name: string;
+  job_title: string;
+  job_city?: string;
+  job_country?: string;
+  job_description: string;
+  job_apply_link?: string;
 }
 
 const Jobs = () => {
   const [keywords, setKeywords] = useState('');
-  const [sources, setSources] = useState<string[]>(['LinkedIn']);
-  const [frequency, setFrequency] = useState('daily');
-  const [alerts, setAlerts] = useState<JobAlert[]>([
-    {
-      id: 1,
-      keywords: 'Frontend Developer React',
-      sources: ['LinkedIn', 'AngelList'],
-      frequency: 'daily',
-      createdAt: new Date('2023-05-10')
-    },
-    {
-      id: 2,
-      keywords: 'UX Designer',
-      sources: ['LinkedIn'],
-      frequency: 'weekly',
-      createdAt: new Date('2023-05-08')
-    }
-  ]);
-  
+  const [jobs, setJobs] = useState<JobResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const toggleSource = (source: string) => {
-    if (sources.includes(source)) {
-      setSources(sources.filter(s => s !== source));
-    } else {
-      setSources([...sources, source]);
-    }
-  };
+  const ADZUNA_APP_ID = import.meta.env.VITE_ADZUNA_APP_ID;
+  const ADZUNA_APP_KEY = import.meta.env.VITE_ADZUNA_APP_KEY;
 
-  const createAlert = () => {
+  const fetchJobs = async () => {
     if (!keywords.trim()) {
       toast({
-        title: "Error",
-        description: "Please enter keywords for your job alert",
-        variant: "destructive"
+        title: 'Missing Keywords',
+        description: 'Please enter keywords to search for jobs.',
+        variant: 'destructive',
       });
       return;
     }
-
-    const newAlert: JobAlert = {
-      id: Date.now(),
-      keywords,
-      sources,
-      frequency,
-      createdAt: new Date()
-    };
-
-    setAlerts([...alerts, newAlert]);
-    setKeywords('');
-    setSources(['LinkedIn']);
-    setFrequency('daily');
-
-    toast({
-      title: "Alert Created",
-      description: "Your job alert has been set up successfully",
-    });
-  };
-
-  const deleteAlert = (id: number) => {
-    setAlerts(alerts.filter(alert => alert.id !== id));
-    toast({
-      title: "Alert Deleted",
-      description: "Your job alert has been deleted",
-    });
+    if (!ADZUNA_APP_ID || !ADZUNA_APP_KEY) {
+      toast({
+        title: 'API Key Error',
+        description: 'Adzuna App ID or Key is not set. Please check your .env file.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const response = await fetch(
+        `https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=${ADZUNA_APP_ID}&app_key=${ADZUNA_APP_KEY}&results_per_page=10&what=${encodeURIComponent(keywords)}`
+      );
+      const data = await response.json();
+      const jobs = (data.results || []).map((job: any) => ({
+        job_id: job.id?.toString() || job.redirect_url,
+        employer_name: job.company?.display_name || '',
+        job_title: job.title,
+        job_city: job.location?.area?.[1] || '',
+        job_country: job.location?.area?.[0] || '',
+        job_description: job.description,
+        job_apply_link: job.redirect_url,
+      }));
+      setJobs(jobs);
+      if (!jobs.length) {
+        toast({
+          title: 'No Jobs Found',
+          description: 'No jobs matched your search. Try different keywords.',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Job Fetch Error',
+        description: 'Could not fetch jobs from Adzuna.',
+        variant: 'destructive',
+      });
+    }
+    setIsLoading(false);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <header className="max-w-3xl mx-auto mb-6">
         <Button 
-          variant="ghost" 
-          onClick={() => navigate('/')}
-          className="mb-4"
+          onClick={() => navigate('/')} 
+          className="mb-4 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
         >
           ← Back to Home
         </Button>
-        <h1 className="text-3xl font-bold text-gray-800">Job Alerts</h1>
-        <p className="text-gray-600">Get notified when relevant job opportunities are posted</p>
+        <h1 className="text-3xl font-bold text-gray-800">Job Search</h1>
+        <p className="text-gray-600">Find real jobs from top job boards</p>
       </header>
 
       <div className="max-w-3xl mx-auto">
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Create New Job Alert</CardTitle>
+            <CardTitle>Search Jobs</CardTitle>
             <CardDescription>
-              Set up notifications for job openings that match your skills and interests
+              Enter keywords to find jobs (e.g., React Developer, UX Designer, Google)
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="keywords">Keywords (skills, job titles, companies)</Label>
+              <Label htmlFor="keywords">Keywords</Label>
               <Input
                 id="keywords"
                 placeholder="e.g., React Developer, Frontend Engineer, Google"
                 value={keywords}
                 onChange={(e) => setKeywords(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') fetchJobs(); }}
               />
-              <p className="text-xs text-gray-500">Use specific skills and job titles for better matches</p>
             </div>
-
-            <div className="space-y-2">
-              <Label>Job Sources</Label>
-              <div className="flex flex-wrap gap-2">
-                {['LinkedIn', 'AngelList', 'Indeed', 'Glassdoor'].map((source) => (
-                  <Button
-                    key={source}
-                    type="button"
-                    variant={sources.includes(source) ? "default" : "outline"}
-                    className={sources.includes(source) ? "bg-interview-blue" : ""}
-                    onClick={() => toggleSource(source)}
-                    size="sm"
-                  >
-                    {source}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="frequency">Alert Frequency</Label>
-              <select
-                id="frequency"
-                value={frequency}
-                onChange={(e) => setFrequency(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="instant">Instant</option>
-              </select>
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button onClick={createAlert} className="w-full bg-interview-blue">
-              <Plus className="mr-2 h-4 w-4" />
-              Create Alert
+            <Button onClick={fetchJobs} className="w-full bg-interview-blue text-white" disabled={isLoading}>
+              {isLoading ? 'Searching...' : 'Search Jobs'}
             </Button>
-          </CardFooter>
+          </CardContent>
         </Card>
 
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800">Your Job Alerts</h2>
-          
-          {alerts.length === 0 ? (
+          <h2 className="text-xl font-semibold text-gray-800">Job Results</h2>
+          {jobs.length === 0 ? (
             <Card className="p-6 text-center text-gray-500">
-              <Bell className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-              <p>You don't have any job alerts yet</p>
+              <p>No jobs to show. Enter keywords and search above.</p>
             </Card>
           ) : (
-            alerts.map((alert) => (
-              <Card key={alert.id}>
+            jobs.map((job) => (
+              <Card key={job.job_id}>
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-lg">{alert.keywords}</CardTitle>
+                      <CardTitle className="text-lg">{job.job_title}</CardTitle>
                       <CardDescription>
-                        Created {alert.createdAt.toLocaleDateString()}
+                        {job.employer_name} {job.job_city && `- ${job.job_city}`}{job.job_country && `, ${job.job_country}`}
                       </CardDescription>
                     </div>
-                    <div className="flex space-x-2">
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                        <Edit className="h-4 w-4" />
+                    {job.job_apply_link && (
+                      <Button asChild className="bg-interview-blue text-white flex items-center">
+                        <a href={job.job_apply_link} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="mr-1 h-4 w-4" /> Apply
+                        </a>
                       </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
-                        onClick={() => deleteAlert(alert.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {alert.sources.map((source) => (
-                      <span 
-                        key={source} 
-                        className="bg-gray-100 text-gray-700 text-xs py-1 px-2 rounded-full"
-                      >
-                        {source}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    Frequency: <span className="font-medium capitalize">{alert.frequency}</span>
-                  </div>
+                  <div className="text-xs text-gray-600 mb-1 line-clamp-3">{job.job_description}</div>
                 </CardContent>
               </Card>
             ))
