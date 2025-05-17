@@ -4,6 +4,8 @@ import './index.css'
 import { useEffect, useState } from "react";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { useTheme } from "next-themes";
+import { Buffer } from 'buffer';
+window.Buffer = Buffer;
 
 const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 

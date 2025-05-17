@@ -287,6 +287,45 @@ const Index = () => {
                       </Button>
                     </CardContent>
                   </Card>
+                  
+                  <Card className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-6 flex flex-col h-full">
+                      <div className="flex items-center mb-4">
+                        <div className="rounded-full bg-indigo-100 dark:bg-indigo-200 p-3 mr-3">
+                          <Folder className="h-6 w-6 text-indigo-600" />
+                        </div>
+                        <h2 className="text-lg font-semibold dark:text-white">AI Portfolio Builder</h2>
+                      </div>
+                      <p className="text-gray-600 dark:text-gray-300 mb-4 flex-grow">Upload your resume or answer a few questions to generate a beautiful, host-ready portfolio site. Export as HTML or deploy to a custom subdomain.</p>
+                      <Button onClick={() => navigateTo('/portfolio-builder')} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">Build Portfolio</Button>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-6 flex flex-col h-full">
+                      <div className="flex items-center mb-4">
+                        <div className="rounded-full bg-green-100 dark:bg-green-200 p-3 mr-3">
+                          <FileText className="h-6 w-6 text-green-600" />
+                        </div>
+                        <h2 className="text-lg font-semibold dark:text-white">AI CV Generator</h2>
+                      </div>
+                      <p className="text-gray-600 dark:text-gray-300 mb-4 flex-grow">No resume? No problem! Answer a few questions and get an ATS-friendly CV in PDF or DOCX format.</p>
+                      <Button onClick={() => navigateTo('/cv-generator')} className="w-full bg-green-600 hover:bg-green-700 text-white">Generate CV</Button>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-6 flex flex-col h-full">
+                      <div className="flex items-center mb-4">
+                        <div className="rounded-full bg-yellow-100 dark:bg-yellow-200 p-3 mr-3">
+                          <User className="h-6 w-6 text-yellow-600" />
+                        </div>
+                        <h2 className="text-lg font-semibold dark:text-white">AI Career Coach</h2>
+                      </div>
+                      <p className="text-gray-600 dark:text-gray-300 mb-4 flex-grow">Get personalized career coaching and skill gap analysis based on your resume or Q&A responses.</p>
+                      <Button onClick={() => navigateTo('/career-coach')} className="w-full bg-yellow-600 hover:bg-yellow-700 text-white">Get Coaching</Button>
+                    </CardContent>
+                  </Card>
                 </div>
               </TabsContent>
               

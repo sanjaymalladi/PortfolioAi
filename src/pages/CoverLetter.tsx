@@ -35,7 +35,7 @@ const CoverLetter = () => {
         // Parse PDF and extract text using pdf-parse-new
         const reader = new FileReader();
         reader.onload = async function() {
-          const typedarray = new Uint8Array(this.result as ArrayBuffer);
+          const typedarray = Buffer.from(this.result as ArrayBuffer);
           const { text } = await pdfParse(typedarray);
           setResumeText(text);
         };

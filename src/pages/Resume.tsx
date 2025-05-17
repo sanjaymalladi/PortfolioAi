@@ -34,7 +34,8 @@ const Resume = () => {
         const reader = new FileReader();
         reader.onload = async function() {
           const typedarray = new Uint8Array(this.result as ArrayBuffer);
-          const { text } = await pdfParse(typedarray);
+          const buffer = Buffer.from(typedarray);
+          const { text } = await pdfParse(buffer);
           setResumeText(text);
         };
         reader.readAsArrayBuffer(file);

@@ -10,6 +10,9 @@ import Resume from "./pages/Resume";
 import Jobs from "./pages/Jobs";
 import Portfolio from "./pages/Portfolio";
 import CoverLetter from "./pages/CoverLetter";
+import PortfolioBuilder from "./pages/PortfolioBuilder";
+import CVGenerator from "./pages/CVGenerator";
+import CareerCoach from "./pages/CareerCoach";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +46,21 @@ const App = () => (
                 <Route path="/cover-letter" element={
                   <SignedIn>
                     <CoverLetter />
+                  </SignedIn>
+                } />
+                <Route path="/portfolio-builder" element={
+                  <SignedIn>
+                    <PortfolioBuilder />
+                  </SignedIn>
+                } />
+                <Route path="/cv-generator" element={
+                  <SignedIn>
+                    <CVGenerator />
+                  </SignedIn>
+                } />
+                <Route path="/career-coach" element={
+                  <SignedIn>
+                    <CareerCoach />
                   </SignedIn>
                 } />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
