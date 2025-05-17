@@ -8,6 +8,8 @@ import { FileText, Upload, Check, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { askGemini } from '../services/geminiService';
+import { jsPDF } from 'jspdf';
+import pdfParse from 'pdf-parse-new';
 
 const Resume = () => {
   const [resumeText, setResumeText] = useState('');
@@ -15,17 +17,28 @@ const Resume = () => {
   const [score, setScore] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<{strengths: string[], improvements: string[]} | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setResumeFile(file);
       toast({
         title: "Resume uploaded",
-        description: `File "${file.name}" has been uploaded.`,
+        description: `File \"${file.name}\" has been uploaded.`,
       });
+      if (file.type === 'application/pdf') {
+        // Parse PDF and extract text using pdf-parse-new
+        const reader = new FileReader();
+        reader.onload = async function() {
+          const typedarray = new Uint8Array(this.result as ArrayBuffer);
+          const { text } = await pdfParse(typedarray);
+          setResumeText(text);
+        };
+        reader.readAsArrayBuffer(file);
+      }
     }
   };
 
@@ -62,6 +75,31 @@ const Resume = () => {
       setScore(null);
       setFeedback(null);
       toast({ title: 'Error', description: 'Failed to analyze resume.' });
+    }
+    setIsAnalyzing(false);
+  };
+
+  const downloadReport = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text('Resume Analysis Report', 10, 20);
+    doc.setFontSize(12);
+    doc.text(`Score: ${score ?? ''}`, 10, 35);
+    doc.text('Strengths:', 10, 45);
+    feedback?.strengths.forEach((s, i) => doc.text(`- ${s}`, 15, 55 + i * 8));
+    doc.text('Areas for Improvement:', 10, 65 + (feedback?.strengths.length ?? 0) * 8);
+    feedback?.improvements.forEach((s, i) => doc.text(`- ${s}`, 15, 75 + (feedback?.strengths.length ?? 0) * 8 + i * 8));
+    doc.save('resume-analysis.pdf');
+  };
+
+  const getAiSuggestions = async () => {
+    setIsAnalyzing(true);
+    try {
+      const prompt = `Based on the following resume analysis, provide actionable AI suggestions to improve the resume.\nScore: ${score}\nStrengths: ${feedback?.strengths.join(', ')}\nImprovements: ${feedback?.improvements.join(', ')}`;
+      const result = await askGemini(prompt);
+      setAiSuggestions(result.trim());
+    } catch (e) {
+      setAiSuggestions('Failed to get AI suggestions.');
     }
     setIsAnalyzing(false);
   };
@@ -200,13 +238,20 @@ const Resume = () => {
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between">
-                <Button variant="outline">Download Report</Button>
-                <Button className="bg-interview-blue">Get AI Suggestions</Button>
+                <Button variant="outline" onClick={downloadReport}>Download Report</Button>
+                <Button className="bg-interview-blue" onClick={getAiSuggestions} disabled={isAnalyzing}>Get AI Suggestions</Button>
               </CardFooter>
             </Card>
           )}
         </div>
       </div>
+
+      {aiSuggestions && (
+        <Card className="mt-4">
+          <CardHeader><CardTitle>AI Suggestions</CardTitle></CardHeader>
+          <CardContent><div className="whitespace-pre-line">{aiSuggestions}</div></CardContent>
+        </Card>
+      )}
     </div>
   );
 };

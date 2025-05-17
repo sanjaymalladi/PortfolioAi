@@ -8,6 +8,8 @@ import { FileEdit, Download, Copy, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { askGemini } from '../services/geminiService';
+import { jsPDF } from 'jspdf';
+import pdfParse from 'pdf-parse-new';
 
 const CoverLetter = () => {
   const [jobDescription, setJobDescription] = useState('');
@@ -16,8 +18,41 @@ const CoverLetter = () => {
   const [coverLetter, setCoverLetter] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [resumeText, setResumeText] = useState('');
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const handleResumeFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setResumeFile(file);
+      toast({
+        title: "Resume uploaded",
+        description: `File \"${file.name}\" has been uploaded.`,
+      });
+      if (file.type === 'application/pdf') {
+        // Parse PDF and extract text using pdf-parse-new
+        const reader = new FileReader();
+        reader.onload = async function() {
+          const typedarray = new Uint8Array(this.result as ArrayBuffer);
+          const { text } = await pdfParse(typedarray);
+          setResumeText(text);
+        };
+        reader.readAsArrayBuffer(file);
+      }
+    }
+  };
+
+  const downloadCoverLetter = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text('Cover Letter', 10, 20);
+    doc.setFontSize(12);
+    const lines = doc.splitTextToSize(coverLetter, 180);
+    doc.text(lines, 10, 35);
+    doc.save('cover-letter.pdf');
+  };
 
   const generateCoverLetter = async () => {
     if (!jobDescription || !companyName) {
@@ -30,7 +65,7 @@ const CoverLetter = () => {
     }
     setIsGenerating(true);
     try {
-      const prompt = `Write a ${tone} cover letter for the following job at ${companyName}. Use the job description below.\nJob Description:\n${jobDescription}`;
+      const prompt = `Write a ${tone} cover letter for the following job at ${companyName}. Use the job description and resume below.\nJob Description:\n${jobDescription}\nResume:\n${resumeText}`;
       const result = await askGemini(prompt);
       setCoverLetter(result.trim());
       toast({
@@ -135,6 +170,27 @@ const CoverLetter = () => {
                   </Button>
                 </div>
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="resume-upload">Resume (optional, PDF or paste text)</Label>
+                <Input 
+                  id="resume-upload" 
+                  type="file" 
+                  className="hidden" 
+                  onChange={handleResumeFileUpload}
+                  accept=".pdf,.doc,.docx,.txt"
+                />
+                <Label htmlFor="resume-upload" className="cursor-pointer flex flex-col items-center">
+                  <FileEdit className="h-6 w-6 text-gray-400 mb-2" />
+                  <span className="text-sm font-medium text-gray-700">Click to upload PDF</span>
+                </Label>
+                <Textarea
+                  placeholder="Paste your resume here (optional)"
+                  rows={5}
+                  value={resumeText}
+                  onChange={(e) => setResumeText(e.target.value)}
+                />
+              </div>
             </CardContent>
             <CardFooter>
               <Button 
@@ -180,7 +236,7 @@ const CoverLetter = () => {
                     </>
                   )}
                 </Button>
-                <Button className="flex items-center bg-interview-green">
+                <Button className="flex items-center bg-interview-green" onClick={downloadCoverLetter}>
                   <Download className="mr-1 h-4 w-4" />
                   Download as PDF
                 </Button>

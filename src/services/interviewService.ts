@@ -37,15 +37,18 @@ export const getInterviewQuestions = (): Question[] => {
   ];
 };
 
-export const getInterviewQuestion = async (previous: string[] = []): Promise<string> => {
-  const prompt = previous.length
-    ? `Continue this mock interview. Here are the previous questions and answers: ${JSON.stringify(previous)}. Ask the next interview question only.`
-    : `Start a mock software engineering interview. Ask the first question only.`;
+export const getInterviewQuestion = async (previous: string[] = [], resume: string = '', job: string = ''): Promise<string> => {
+  let prompt = '';
+  if (previous.length) {
+    prompt = `Continue this mock interview for the following job and candidate.\nJob Description: ${job}\nResume: ${resume}\nHere are the previous questions and answers: ${JSON.stringify(previous)}. Ask the next interview question only.`;
+  } else {
+    prompt = `Start a mock interview for the following job and candidate.\nJob Description: ${job}\nResume: ${resume}\nAsk the first interview question only.`;
+  }
   return await askGemini(prompt);
 };
 
-export const getInterviewFeedback = async (question: string, answer: string): Promise<Feedback> => {
-  const prompt = `You are an interview coach. Here is the interview question: "${question}" and the candidate's answer: "${answer}". Give a JSON with keys: score (0-100), positive (what was good), improvement (how to improve).`;
+export const getInterviewFeedback = async (question: string, answer: string, resume: string = '', job: string = ''): Promise<Feedback> => {
+  const prompt = `You are an interview coach. Here is the job description: "${job}". Here is the candidate's resume: "${resume}". Here is the interview question: "${question}" and the candidate's answer: "${answer}". Give a JSON with keys: score (0-100), positive (what was good), improvement (how to improve).`;
   const result = await askGemini(prompt);
   let parsed;
   try {
