@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import WelcomeScreen from '../components/WelcomeScreen';
@@ -18,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
+import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/clerk-react";
 
 const Index = () => {
   const [interviewStarted, setInterviewStarted] = useState(false);
@@ -52,7 +52,7 @@ const Index = () => {
       <header className="bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700 p-4 sticky top-0 z-50 transition-colors duration-200">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigateTo('/')}>
               <div className="bg-gradient-to-r from-interview-blue to-interview-green p-1.5 rounded-lg">
                 <MessageSquare className="h-5 w-5 text-white" />
               </div>
@@ -128,16 +128,30 @@ const Index = () => {
           
           <div className="flex items-center space-x-3">
             <ThemeToggle />
-            
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="flex items-center gap-1.5 border-interview-blue dark:border-interview-blue/70 text-interview-blue dark:text-interview-blue/90 hover:bg-interview-blue hover:text-white dark:hover:bg-interview-blue/90 rounded-full"
-              onClick={() => navigateTo('/login')}
-            >
-              <User className="h-4 w-4" />
-              <span>Sign In</span>
-            </Button>
+            <SignedOut>
+              <SignInButton mode="modal">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-1.5 border-interview-blue dark:border-interview-blue/70 text-interview-blue dark:text-interview-blue/90 hover:bg-interview-blue hover:text-white dark:hover:bg-interview-blue/90 rounded-full"
+                >
+                  <User className="h-4 w-4" />
+                  <span>Sign In</span>
+                </Button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-1.5 border-interview-blue dark:border-interview-blue/70 text-interview-blue dark:text-interview-blue/90 hover:bg-interview-blue hover:text-white dark:hover:bg-interview-blue/90 rounded-full"
+                >
+                  <span>Sign Up</span>
+                </Button>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
           </div>
         </div>
         
@@ -223,16 +237,16 @@ const Index = () => {
                     <CardContent className="p-6 flex flex-col h-full">
                       <div className="flex items-center mb-4">
                         <div className="rounded-full bg-interview-blue/10 dark:bg-interview-blue/20 p-3 mr-3">
-                          <MessageSquare className="h-6 w-6 text-interview-blue dark:text-interview-blue/90" />
+                          <FileEdit className="h-6 w-6 text-interview-blue dark:text-interview-blue/90" />
                         </div>
-                        <h2 className="text-lg font-semibold dark:text-white">AI Mock Interviewer</h2>
+                        <h2 className="text-lg font-semibold dark:text-white">AI Cover Letter Maker</h2>
                       </div>
-                      <p className="text-gray-600 dark:text-gray-300 mb-4 flex-grow">Practice answering common interview questions with our AI coach and get instant feedback.</p>
+                      <p className="text-gray-600 dark:text-gray-300 mb-4 flex-grow">Generate personalized, professional cover letters instantly with our AI-powered tool.</p>
                       <Button 
-                        onClick={handleStartInterview} 
+                        onClick={() => navigateTo('/cover-letter')} 
                         className="w-full bg-interview-blue hover:bg-interview-blue/90 text-white"
                       >
-                        Start Interview
+                        Create Cover Letter
                       </Button>
                     </CardContent>
                   </Card>

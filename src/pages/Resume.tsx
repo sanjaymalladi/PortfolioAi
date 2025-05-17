@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { FileText, Upload, Check, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { askGemini } from '../services/geminiService';
 
 const Resume = () => {
   const [resumeText, setResumeText] = useState('');
@@ -29,27 +29,41 @@ const Resume = () => {
     }
   };
 
-  const analyzeResume = () => {
+  const analyzeResume = async () => {
     setIsAnalyzing(true);
-    
-    // Simulate API call delay
-    setTimeout(() => {
-      // Mock analysis results
-      setScore(78);
-      setFeedback({
-        strengths: [
-          "Strong technical skills section",
-          "Clear project descriptions",
-          "Good education background"
-        ],
-        improvements: [
-          "Add more quantifiable achievements",
-          "Reduce use of passive voice",
-          "Include more industry keywords"
-        ]
-      });
-      setIsAnalyzing(false);
-    }, 2000);
+    try {
+      let text = resumeText;
+      if (!text && resumeFile) {
+        // Optionally, add file reading logic here
+        setIsAnalyzing(false);
+        toast({ title: 'Error', description: 'Please paste your resume text for analysis.' });
+        return;
+      }
+      const prompt = `Analyze the following resume. Give a score out of 100, a list of strengths, and a list of areas for improvement. Respond in JSON with keys: score, strengths, improvements.\nResume:\n${text}`;
+      const result = await askGemini(prompt);
+      // Try to parse JSON from Gemini's response
+      let parsed;
+      try {
+        parsed = JSON.parse(result);
+      } catch {
+        // Fallback: try to extract JSON from text
+        const match = result.match(/\{[\s\S]*\}/);
+        parsed = match ? JSON.parse(match[0]) : null;
+      }
+      if (parsed && parsed.score && parsed.strengths && parsed.improvements) {
+        setScore(parsed.score);
+        setFeedback({ strengths: parsed.strengths, improvements: parsed.improvements });
+      } else {
+        setScore(null);
+        setFeedback(null);
+        toast({ title: 'Analysis failed', description: 'Could not parse Gemini response.' });
+      }
+    } catch (e) {
+      setScore(null);
+      setFeedback(null);
+      toast({ title: 'Error', description: 'Failed to analyze resume.' });
+    }
+    setIsAnalyzing(false);
   };
 
   return (

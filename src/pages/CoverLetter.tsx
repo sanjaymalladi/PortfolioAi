@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { FileEdit, Download, Copy, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { askGemini } from '../services/geminiService';
 
 const CoverLetter = () => {
   const [jobDescription, setJobDescription] = useState('');
@@ -19,7 +19,7 @@ const CoverLetter = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const generateCoverLetter = () => {
+  const generateCoverLetter = async () => {
     if (!jobDescription || !companyName) {
       toast({
         title: "Missing Information",
@@ -28,58 +28,24 @@ const CoverLetter = () => {
       });
       return;
     }
-
     setIsGenerating(true);
-    
-    // Simulate API call delay
-    setTimeout(() => {
-      const sampleLetters = {
-        professional: `Dear Hiring Manager,
-
-I am writing to express my interest in the Software Developer position at ${companyName}. With my background in computer science and experience in building web applications using modern frameworks, I believe I would be a valuable addition to your team.
-
-The job description mentions a need for someone with strong problem-solving skills and experience with React, which align perfectly with my skill set. In my previous role at Tech Solutions Inc., I developed and maintained multiple React-based applications that improved internal workflow efficiency by 35%.
-
-I am particularly drawn to ${companyName}'s mission to create innovative solutions that make a difference in people's lives. I am excited about the opportunity to contribute to your team and help build the next generation of your products.
-
-Thank you for considering my application. I look forward to the possibility of discussing how my skills and experiences align with your needs.
-
-Sincerely,
-[Your Name]`,
-        friendly: `Hi there!
-
-I'm super excited about the Software Developer role at ${companyName}! When I read through the job description, I couldn't help but think how well my experience matches what you're looking for.
-
-I've spent the last few years building really cool web apps using React and other modern tools. One of my favorite projects was creating a dashboard that helped my team at Tech Solutions track their work more easily – it actually saved everyone about 5 hours a week!
-
-What really draws me to ${companyName} is how you're using technology to solve real problems for people. That's exactly the kind of work I want to be doing!
-
-I'd love to chat more about how I could bring my enthusiasm and skills to your team. Thanks for reading, and I hope to hear from you soon!
-
-Cheers,
-[Your Name]`,
-        confident: `To the ${companyName} Hiring Team:
-
-I am the Software Developer you've been searching for. With my track record of delivering high-performance web applications and expertise in React development, I am positioned to make an immediate impact at ${companyName}.
-
-Based on your job description, you need someone who can hit the ground running with minimal guidance. At Tech Solutions Inc., I independently led the development of a mission-critical application that increased customer engagement by 45% within three months of launch.
-
-${companyName}'s reputation for innovation and excellence resonates with my professional approach. I don't just meet expectations—I exceed them, consistently.
-
-I look forward to demonstrating how my proven abilities will contribute to your continued success.
-
-Regards,
-[Your Name]`
-      };
-      
-      setCoverLetter(sampleLetters[tone as keyof typeof sampleLetters]);
-      setIsGenerating(false);
-      
+    try {
+      const prompt = `Write a ${tone} cover letter for the following job at ${companyName}. Use the job description below.\nJob Description:\n${jobDescription}`;
+      const result = await askGemini(prompt);
+      setCoverLetter(result.trim());
       toast({
         title: "Cover Letter Generated",
         description: "Your personalized cover letter is ready",
       });
-    }, 2000);
+    } catch (e) {
+      setCoverLetter('');
+      toast({
+        title: "Error",
+        description: "Failed to generate cover letter.",
+        variant: "destructive"
+      });
+    }
+    setIsGenerating(false);
   };
 
   const handleCopy = () => {
