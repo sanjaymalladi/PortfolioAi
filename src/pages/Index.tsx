@@ -60,71 +60,7 @@ const Index = () => {
                 PortfolioAI
               </h1>
             </div>
-            <span className="ml-2 text-sm bg-interview-blue/10 dark:bg-interview-blue/20 px-2 py-0.5 rounded-full text-interview-blue dark:text-interview-blue/90">AI Mock Interviewer</span>
           </div>
-          
-          {!interviewStarted && (
-            <>
-              {/* Desktop Navigation */}
-              <div className="hidden md:flex items-center space-x-1">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => navigateTo('/')}
-                  className="nav-link rounded-full px-4"
-                >
-                  <Home className="w-4 h-4 mr-1" />
-                  <span>Home</span>
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => navigateTo('/resume')}
-                  className="nav-link rounded-full px-4"
-                >
-                  <FileText className="w-4 h-4 mr-1" />
-                  <span>Resume</span>
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => navigateTo('/jobs')}
-                  className="nav-link rounded-full px-4"
-                >
-                  <Bell className="w-4 h-4 mr-1" />
-                  <span>Jobs</span>
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => navigateTo('/portfolio')}
-                  className="nav-link rounded-full px-4"
-                >
-                  <Folder className="w-4 h-4 mr-1" />
-                  <span>Portfolio</span>
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => navigateTo('/cover-letter')}
-                  className="nav-link rounded-full px-4"
-                >
-                  <FileEdit className="w-4 h-4 mr-1" />
-                  <span>Cover Letter</span>
-                </Button>
-              </div>
-              
-              {/* Mobile Menu Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="md:hidden"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-            </>
-          )}
           
           <div className="flex items-center space-x-3">
             <ThemeToggle />
@@ -154,59 +90,6 @@ const Index = () => {
             </SignedIn>
           </div>
         </div>
-        
-        {/* Mobile Menu */}
-        {mobileMenuOpen && !interviewStarted && (
-          <div className="md:hidden mt-4 py-3 px-2 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-lg animate-fade-in">
-            <nav className="flex flex-col space-y-2">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => navigateTo('/')}
-                className="justify-start"
-              >
-                <Home className="w-4 h-4 mr-2" />
-                <span>Home</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => navigateTo('/resume')}
-                className="justify-start"
-              >
-                <FileText className="w-4 h-4 mr-2" />
-                <span>Resume</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => navigateTo('/jobs')}
-                className="justify-start"
-              >
-                <Bell className="w-4 h-4 mr-2" />
-                <span>Jobs</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => navigateTo('/portfolio')}
-                className="justify-start"
-              >
-                <Folder className="w-4 h-4 mr-2" />
-                <span>Portfolio</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => navigateTo('/cover-letter')}
-                className="justify-start"
-              >
-                <FileEdit className="w-4 h-4 mr-2" />
-                <span>Cover Letter</span>
-              </Button>
-            </nav>
-          </div>
-        )}
       </header>
       
       <main className="max-w-7xl mx-auto p-4">
