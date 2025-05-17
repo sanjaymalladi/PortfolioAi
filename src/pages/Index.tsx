@@ -158,9 +158,9 @@ const Index = () => {
                         <div className="rounded-full bg-interview-orange/10 dark:bg-interview-orange/20 p-3 mr-3">
                           <Bell className="h-6 w-6 text-interview-orange dark:text-interview-orange/90" />
                         </div>
-                        <h2 className="text-lg font-semibold dark:text-white">Job Alerts</h2>
+                        <h2 className="text-lg font-semibold dark:text-white">Job Search</h2>
                       </div>
-                      <p className="text-gray-600 dark:text-gray-300 mb-4 flex-grow">Set up custom job alerts and get notified when matching positions are available.</p>
+                      <p className="text-gray-600 dark:text-gray-300 mb-4 flex-grow">Search for jobs and find the perfect fit.</p>
                       <Button 
                         onClick={() => navigateTo('/jobs')} 
                         variant="outline"
