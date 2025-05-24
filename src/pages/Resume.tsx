@@ -1,15 +1,16 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { FileText, Upload, Check, X } from 'lucide-react';
+import { FileText, Upload, Check, X, Download, RefreshCw, Lightbulb } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
 import { askGemini } from '../services/geminiService';
 import { jsPDF } from 'jspdf';
 import pdfParse from 'pdf-parse-new';
+import PageLayout from '@/components/PageLayout';
 
 const Resume = () => {
   const [resumeText, setResumeText] = useState('');
@@ -19,7 +20,6 @@ const Resume = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<string | null>(null);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -106,154 +106,194 @@ const Resume = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <header className="max-w-3xl mx-auto mb-6">
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate('/')}
-          className="mb-4"
-        >
-          ← Back to Home
-        </Button>
-        <h1 className="text-3xl font-bold text-gray-800">Resume Analysis</h1>
-        <p className="text-gray-600">Upload your resume for instant scoring and improvement tips</p>
-      </header>
+    <PageLayout
+      title="Resume Analysis"
+      description="Get your resume analyzed by AI for instant feedback and improvement suggestions"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <Card className="overflow-hidden border-border/40">
+          <CardHeader className="bg-muted/50">
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Upload Resume
+            </CardTitle>
+            <CardDescription>
+              Upload your resume or paste the text for analysis
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-6 space-y-6">
+            <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:bg-muted/10 transition-colors cursor-pointer">
+              <Input 
+                id="resume-upload" 
+                type="file" 
+                className="hidden" 
+                onChange={handleFileUpload}
+                accept=".pdf,.doc,.docx,.txt"
+              />
+              <Label htmlFor="resume-upload" className="cursor-pointer flex flex-col items-center">
+                <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                <span className="text-sm font-medium text-foreground">
+                  Click to upload or drag and drop
+                </span>
+                <span className="text-xs text-muted-foreground mt-1">
+                  PDF, DOC, DOCX, or TXT (max 5MB)
+                </span>
+              </Label>
+            </div>
 
-      <div className="max-w-3xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="resume-text">Or paste your resume text</Label>
+              <Textarea 
+                id="resume-text" 
+                placeholder="Copy and paste your resume content here..."
+                className="min-h-[200px]"
+                value={resumeText}
+                onChange={(e) => setResumeText(e.target.value)}
+              />
+            </div>
+            
+            <Button 
+              className="w-full" 
+              disabled={(!resumeText && !resumeFile) || isAnalyzing}
+              onClick={analyzeResume}
+            >
+              {isAnalyzing ? (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                'Analyze Resume'
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {score !== null && (
           <Card>
-            <CardHeader>
-              <CardTitle>Upload Your Resume</CardTitle>
+            <CardHeader className="bg-muted/50">
+              <CardTitle className="flex justify-between items-center">
+                <span>Resume Score</span>
+                <span className={`text-lg px-3 py-1 rounded-full ${
+                  score >= 80 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 
+                  score >= 60 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                  'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                }`}>
+                  {score}%
+                </span>
+              </CardTitle>
               <CardDescription>
-                Upload your resume as a document or paste the text directly
+                Based on industry standards and hiring trends
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="border-2 border-dashed border-gray-200 rounded-md p-6 text-center hover:bg-gray-50 transition-colors cursor-pointer">
-                <Input 
-                  id="resume-upload" 
-                  type="file" 
-                  className="hidden" 
-                  onChange={handleFileUpload}
-                  accept=".pdf,.doc,.docx,.txt"
-                />
-                <Label htmlFor="resume-upload" className="cursor-pointer flex flex-col items-center">
-                  <Upload className="h-8 w-8 text-gray-400 mb-2" />
-                  <span className="text-sm font-medium text-gray-700">
-                    Click to upload or drag and drop
-                  </span>
-                  <span className="text-xs text-gray-500 mt-1">
-                    PDF, DOC, DOCX, or TXT (max 5MB)
-                  </span>
-                </Label>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="resume-text">Or paste your resume text</Label>
-                <Textarea 
-                  id="resume-text" 
-                  placeholder="Copy and paste your resume content here..."
-                  className="min-h-[200px]"
-                  value={resumeText}
-                  onChange={(e) => setResumeText(e.target.value)}
-                />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button 
-                className="w-full bg-interview-green" 
-                disabled={(!resumeText && !resumeFile) || isAnalyzing}
-                onClick={analyzeResume}
-              >
-                {isAnalyzing ? 'Analyzing...' : 'Analyze Resume'}
-              </Button>
-            </CardFooter>
-          </Card>
-
-          {score !== null && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Resume Score</CardTitle>
-                <CardDescription>
-                  Based on industry standards and hiring trends
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex justify-center">
-                  <div className="relative h-36 w-36">
-                    <svg className="h-full w-full" viewBox="0 0 100 100">
-                      <circle 
-                        className="text-gray-200 stroke-current" 
-                        strokeWidth="10"
-                        cx="50" 
-                        cy="50" 
-                        r="40" 
-                        fill="transparent"
-                      ></circle>
-                      <circle 
-                        className="text-interview-green stroke-current" 
-                        strokeWidth="10"
-                        strokeLinecap="round"
-                        cx="50" 
-                        cy="50" 
-                        r="40" 
-                        fill="transparent"
-                        strokeDasharray="251.2"
-                        strokeDashoffset={251.2 - (score / 100) * 251.2}
-                        transform="rotate(-90 50 50)"
-                      ></circle>
-                    </svg>
-                    <div className="absolute top-0 left-0 h-full w-full flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="text-4xl font-bold text-interview-green">{score}%</div>
-                        <div className="text-sm text-gray-500">Overall Score</div>
-                      </div>
+            <CardContent className="p-6 space-y-6">
+              <div className="flex justify-center">
+                <div className="relative h-36 w-36">
+                  <svg className="h-full w-full" viewBox="0 0 100 100">
+                    <circle 
+                      className="text-muted stroke-current" 
+                      strokeWidth="10"
+                      cx="50" 
+                      cy="50" 
+                      r="40" 
+                      fill="transparent"
+                    ></circle>
+                    <circle 
+                      className={`stroke-current ${
+                        score >= 80 ? 'text-green-500' : 
+                        score >= 60 ? 'text-yellow-500' : 
+                        'text-red-500'
+                      }`}
+                      strokeWidth="10"
+                      strokeLinecap="round"
+                      cx="50" 
+                      cy="50" 
+                      r="40" 
+                      fill="transparent"
+                      strokeDasharray="251.2"
+                      strokeDashoffset={251.2 - (score / 100) * 251.2}
+                      transform="rotate(-90 50 50)"
+                    ></circle>
+                  </svg>
+                  <div className="absolute top-0 left-0 h-full w-full flex items-center justify-center">
+                    <div className="text-center">
+                      <div className={`text-4xl font-bold ${
+                        score >= 80 ? 'text-green-500' : 
+                        score >= 60 ? 'text-yellow-500' : 
+                        'text-red-500'
+                      }`}>{score}%</div>
+                      <div className="text-sm text-muted-foreground">Overall Score</div>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="font-medium text-interview-green mb-2">Strengths</h3>
-                    <ul className="space-y-1">
-                      {feedback?.strengths.map((strength, i) => (
-                        <li key={i} className="flex items-start text-sm">
-                          <Check className="h-4 w-4 text-interview-green mr-2 mt-0.5 shrink-0" />
-                          <span>{strength}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h3 className="font-medium text-interview-orange mb-2">Areas for Improvement</h3>
-                    <ul className="space-y-1">
-                      {feedback?.improvements.map((improvement, i) => (
-                        <li key={i} className="flex items-start text-sm">
-                          <X className="h-4 w-4 text-interview-orange mr-2 mt-0.5 shrink-0" />
-                          <span>{improvement}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+              <div className="grid grid-cols-1 gap-6">
+                <div>
+                  <h3 className="font-medium text-green-600 dark:text-green-400 flex items-center gap-1 mb-2">
+                    <Check className="h-4 w-4" />
+                    Strengths
+                  </h3>
+                  <ul className="space-y-2">
+                    {feedback?.strengths.map((strength, i) => (
+                      <li key={i} className="flex items-start text-sm bg-green-50 dark:bg-green-900/20 p-2 rounded-md">
+                        <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5 shrink-0" />
+                        <span>{strength}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button variant="outline" onClick={downloadReport}>Download Report</Button>
-                <Button className="bg-interview-blue" onClick={getAiSuggestions} disabled={isAnalyzing}>Get AI Suggestions</Button>
-              </CardFooter>
-            </Card>
-          )}
-        </div>
+
+                <div>
+                  <h3 className="font-medium text-amber-600 dark:text-amber-400 flex items-center gap-1 mb-2">
+                    <X className="h-4 w-4" />
+                    Areas for Improvement
+                  </h3>
+                  <ul className="space-y-2">
+                    {feedback?.improvements.map((improvement, i) => (
+                      <li key={i} className="flex items-start text-sm bg-amber-50 dark:bg-amber-900/20 p-2 rounded-md">
+                        <X className="h-4 w-4 text-amber-500 mr-2 mt-0.5 shrink-0" />
+                        <span>{improvement}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3 pt-2">
+                <Button variant="outline" onClick={downloadReport} className="flex items-center gap-1">
+                  <Download className="h-4 w-4" />
+                  Download Report
+                </Button>
+                <Button onClick={getAiSuggestions} disabled={isAnalyzing} className="flex items-center gap-1">
+                  <Lightbulb className="h-4 w-4" />
+                  Get AI Suggestions
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {aiSuggestions && (
-        <Card className="mt-4">
-          <CardHeader><CardTitle>AI Suggestions</CardTitle></CardHeader>
-          <CardContent><div className="whitespace-pre-line">{aiSuggestions}</div></CardContent>
+        <Card className="mt-8 overflow-hidden border-border/40">
+          <CardHeader className="bg-muted/50">
+            <CardTitle className="flex items-center gap-2">
+              <Lightbulb className="h-5 w-5" />
+              AI Improvement Suggestions
+            </CardTitle>
+            <CardDescription>
+              Professional recommendations to enhance your resume
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="whitespace-pre-line prose dark:prose-invert max-w-none">
+              {aiSuggestions}
+            </div>
+          </CardContent>
         </Card>
       )}
-    </div>
+    </PageLayout>
   );
 };
 

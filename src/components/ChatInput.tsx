@@ -22,7 +22,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled }) => {
   return (
     <form onSubmit={handleSubmit} className="flex gap-2 w-full">
       <textarea
-        className="flex-1 p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-interview-blue/50 resize-none"
+        className="flex-1 p-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-interview-blue/50 resize-none bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-sm"
         placeholder="Type your answer here..."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
@@ -32,7 +32,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled }) => {
       <Button 
         type="submit" 
         disabled={!message.trim() || disabled}
-        className="bg-interview-blue hover:bg-interview-blue/90 text-white self-end"
+        className="bg-interview-blue hover:bg-interview-blue/90 text-white self-end rounded-xl shadow-md"
       >
         <Send size={18} />
       </Button>

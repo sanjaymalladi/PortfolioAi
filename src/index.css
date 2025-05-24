@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -55,7 +55,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -72,11 +72,11 @@
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 217.2 91.2% 59.8%;
     
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary: 217.2 91.2% 59.8%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
@@ -91,75 +91,258 @@
   }
 
   body {
-    @apply bg-background text-foreground font-nunito;
+    @apply bg-gradient-to-br from-background to-background/95 text-foreground font-nunito antialiased min-h-screen;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-interview-blue to-interview-blue/80 bg-clip-text text-transparent;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl font-bold tracking-tight;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl font-semibold tracking-tight;
+  }
+
+  h4 {
+    @apply text-xl md:text-2xl font-semibold tracking-tight;
+  }
+
+  h5 {
+    @apply text-lg md:text-xl font-semibold tracking-tight;
+  }
+
+  h6 {
+    @apply text-base md:text-lg font-semibold tracking-tight;
   }
 }
 
-.chat-bubble-ai {
-  @apply bg-interview-lightBlue dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-2xl rounded-tl-none p-4 max-w-[80%] shadow-sm;
+@layer components {
+  .chat-bubble-ai {
+    @apply bg-gradient-to-br from-interview-lightBlue to-interview-lightBlue/80 dark:from-slate-800/90 dark:to-slate-800/70 text-slate-800 dark:text-slate-200 rounded-3xl rounded-tl-none p-5 max-w-[85%] shadow-lg backdrop-blur-md border border-white/20 dark:border-slate-700/30;
+  }
+
+  .chat-bubble-user {
+    @apply bg-gradient-to-br from-interview-blue to-interview-blue/80 dark:from-interview-blue/90 dark:to-interview-blue/70 text-white rounded-3xl rounded-tr-none p-5 max-w-[85%] shadow-lg self-end backdrop-blur-md border border-white/20;
+  }
+
+  .feedback-positive {
+    @apply text-interview-green dark:text-interview-green/90 font-semibold bg-interview-green/10 dark:bg-interview-green/5 px-3 py-1 rounded-full;
+  }
+
+  .feedback-improvement {
+    @apply text-interview-orange dark:text-interview-orange/90 font-semibold bg-interview-orange/10 dark:bg-interview-orange/5 px-3 py-1 rounded-full;
+  }
+
+  .progress-bar {
+    @apply h-3 bg-interview-gray/50 dark:bg-gray-700/30 rounded-full overflow-hidden backdrop-blur-md border border-white/20 dark:border-slate-700/30;
+  }
+
+  .progress-fill {
+    @apply h-full bg-gradient-to-r from-interview-blue to-interview-blue/80 dark:from-interview-blue/90 dark:to-interview-blue/70 transition-all duration-500 ease-in-out;
+  }
+
+  .typing-indicator span {
+    @apply inline-block w-2.5 h-2.5 rounded-full bg-slate-400 dark:bg-slate-500 mx-0.5 animate-bounce-small;
+  }
+
+  .typing-indicator span:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+
+  .typing-indicator span:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+
+  .interview-card {
+    @apply bg-gradient-to-br from-white to-white/95 dark:from-gray-800/95 dark:to-gray-800/80 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-8 border border-white/20 dark:border-gray-700/30 backdrop-blur-lg hover:-translate-y-1;
+  }
+
+  .glass-card {
+    @apply bg-gradient-to-br from-white/90 to-white/80 dark:from-gray-800/90 dark:to-gray-800/80 backdrop-blur-xl border border-white/20 dark:border-gray-700/30 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1;
+  }
+
+  .nav-link {
+    @apply flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:text-interview-blue dark:hover:text-interview-blue/90 transition-all duration-200 hover:-translate-y-0.5 font-medium;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-interview-blue to-interview-blue/90 hover:from-interview-blue/90 hover:to-interview-blue text-white rounded-xl px-6 py-3 transition-all duration-300 focus:ring-2 focus:ring-interview-blue/20 focus:outline-none shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed font-medium;
+  }
+
+  .btn-secondary {
+    @apply bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-700/80 dark:to-gray-700/60 hover:from-gray-200 hover:to-gray-100 dark:hover:from-gray-600 dark:hover:to-gray-600 text-gray-700 dark:text-gray-200 rounded-xl px-6 py-3 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed font-medium;
+  }
+
+  .btn-outline {
+    @apply bg-gradient-to-r from-transparent to-transparent hover:from-gray-50 hover:to-gray-100 dark:hover:from-gray-800/80 dark:hover:to-gray-800/60 border-2 border-gray-200 dark:border-gray-700/50 text-gray-700 dark:text-gray-200 rounded-xl px-6 py-3 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed font-medium;
+  }
+
+  .input-field {
+    @apply w-full bg-gradient-to-br from-white to-white/95 dark:from-gray-800/95 dark:to-gray-800/90 border-2 border-gray-200 dark:border-gray-700/50 rounded-xl px-5 py-3 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-interview-blue/20 transition-all duration-300 shadow-lg backdrop-blur-sm;
+  }
+
+  .label-text {
+    @apply text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2 bg-gradient-to-r from-gray-600 to-gray-500 dark:from-gray-300 dark:to-gray-400 bg-clip-text text-transparent;
+  }
+
+  /* Modern effects */
+  .glass-effect {
+    @apply bg-white/10 dark:bg-gray-800/10 backdrop-blur-xl border border-white/20 dark:border-gray-700/30;
+  }
+
+  .neon-glow {
+    @apply shadow-[0_0_15px_rgba(37,99,235,0.3)] dark:shadow-[0_0_15px_rgba(37,99,235,0.2)];
+  }
+
+  .gradient-border {
+    @apply relative before:absolute before:inset-0 before:p-[2px] before:bg-gradient-to-r before:from-interview-blue before:to-interview-blue/80 before:rounded-xl before:-z-10;
+  }
+
+  .floating {
+    animation: floating 3s ease-in-out infinite;
+  }
+
+  /* Modern card variations */
+  .feature-card {
+    @apply glass-card p-8 hover:shadow-[0_0_15px_rgba(37,99,235,0.3)] dark:hover:shadow-[0_0_15px_rgba(37,99,235,0.2)];
+  }
+
+  .stats-card {
+    @apply glass-card p-6 text-center hover:shadow-[0_0_15px_rgba(37,99,235,0.3)] dark:hover:shadow-[0_0_15px_rgba(37,99,235,0.2)];
+  }
+
+  .profile-card {
+    @apply glass-card p-8 text-center hover:shadow-[0_0_15px_rgba(37,99,235,0.3)] dark:hover:shadow-[0_0_15px_rgba(37,99,235,0.2)];
+  }
+
+  /* Modern button variations */
+  .btn-gradient {
+    @apply bg-gradient-to-r from-interview-blue via-interview-blue/90 to-interview-blue/80 hover:from-interview-blue/90 hover:via-interview-blue/80 hover:to-interview-blue/70 text-white rounded-xl px-6 py-3 transition-all duration-300 focus:ring-2 focus:ring-interview-blue/20 focus:outline-none shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed font-medium;
+  }
+
+  .btn-outline-gradient {
+    @apply relative bg-transparent text-interview-blue dark:text-interview-blue/90 rounded-xl px-6 py-3 transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed font-medium before:absolute before:inset-0 before:rounded-xl before:border-2 before:border-interview-blue/50 before:transition-all before:duration-300 hover:before:border-interview-blue;
+  }
+
+  /* Modern input variations */
+  .input-gradient {
+    @apply input-field focus:border-interview-blue/50 focus:ring-interview-blue/20;
+  }
+
+  .input-glass {
+    @apply input-field bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl;
+  }
+  
+  /* New styles for homepage features */
+  .navbar-container {
+    @apply fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 shadow-sm;
+  }
+  
+  .navbar {
+    @apply max-w-7xl mx-auto flex justify-between items-center px-4 py-3 md:py-4;
+  }
+  
+  .navbar-brand {
+    @apply flex items-center gap-2 transition-all duration-300 hover:scale-105;
+  }
+  
+  .navbar-menu {
+    @apply hidden md:flex items-center space-x-1;
+  }
+  
+  .navbar-item {
+    @apply px-3 py-2 text-sm font-medium rounded-full transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 hover:text-interview-blue dark:hover:text-interview-blue/90;
+  }
+  
+  .navbar-item-active {
+    @apply bg-interview-blue/10 text-interview-blue dark:bg-interview-blue/20 dark:text-interview-blue/90;
+  }
+  
+  .navbar-buttons {
+    @apply flex items-center space-x-2;
+  }
+  
+  .hero-container {
+    @apply pt-24 md:pt-28 pb-10 md:pb-16 px-4;
+  }
+  
+  .hero-content {
+    @apply max-w-5xl mx-auto text-center;
+  }
+  
+  .hero-title {
+    @apply text-4xl md:text-6xl font-extrabold tracking-tight mb-4 bg-gradient-to-br from-interview-blue via-interview-blue/90 to-interview-blue/80 dark:from-interview-blue/90 dark:via-interview-blue/80 dark:to-interview-blue/70 bg-clip-text text-transparent;
+  }
+  
+  .hero-subtitle {
+    @apply text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8;
+  }
+  
+  .hero-actions {
+    @apply flex flex-col sm:flex-row items-center justify-center gap-4;
+  }
+  
+  .feature-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8;
+  }
+  
+  .feature-icon-container {
+    @apply rounded-2xl p-3 inline-flex items-center justify-center mb-4 shadow-inner;
+  }
+  
+  .tab-container {
+    @apply bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-6 md:p-8;
+  }
+  
+  .footer {
+    @apply bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-8 md:py-12 mt-16;
+  }
+  
+  .footer-inner {
+    @apply max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center;
+  }
+  
+  .footer-copyright {
+    @apply text-sm text-gray-500 dark:text-gray-400;
+  }
+  
+  .footer-links {
+    @apply flex flex-wrap justify-center md:justify-end gap-4 mt-4 md:mt-0;
+  }
+  
+  .footer-link {
+    @apply text-sm text-gray-500 dark:text-gray-400 hover:text-interview-blue dark:hover:text-interview-blue/90 transition-colors;
+  }
 }
 
-.chat-bubble-user {
-  @apply bg-interview-blue dark:bg-interview-blue/80 text-white rounded-2xl rounded-tr-none p-4 max-w-[80%] shadow-sm self-end;
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-interview-blue via-interview-blue/90 to-interview-blue/80 bg-clip-text text-transparent;
+  }
+
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
+  }
+
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-interview-blue/20 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-all duration-200;
+  }
+
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
-.feedback-positive {
-  @apply text-interview-green dark:text-interview-green/90 font-medium;
+@keyframes floating {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
 }
-
-.feedback-improvement {
-  @apply text-interview-orange dark:text-interview-orange/90 font-medium;
-}
-
-.progress-bar {
-  @apply h-2 bg-interview-gray dark:bg-gray-700 rounded-full overflow-hidden;
-}
-
-.progress-fill {
-  @apply h-full bg-interview-blue dark:bg-interview-blue/90 transition-all duration-500 ease-in-out;
-}
-
-.typing-indicator span {
-  @apply inline-block w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500 mx-0.5 animate-bounce-small;
-}
-
-.typing-indicator span:nth-child(2) {
-  animation-delay: 0.1s;
-}
-
-.typing-indicator span:nth-child(3) {
-  animation-delay: 0.2s;
-}
-
-.interview-card {
-  @apply bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 border border-gray-100 dark:border-gray-700;
-}
-
-.glass-card {
-  @apply bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm;
-}
-
-.nav-link {
-  @apply flex items-center gap-1 text-gray-600 dark:text-gray-300 hover:text-interview-blue dark:hover:text-interview-blue/90 transition-colors;
-}
-
-.btn-primary {
-  @apply bg-interview-blue hover:bg-interview-blue/90 text-white rounded-lg px-4 py-2 transition-colors focus:ring-2 focus:ring-interview-blue/20 focus:outline-none;
-}
-
-.btn-secondary {
-  @apply bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg px-4 py-2 transition-colors;
-}
-
-.btn-outline {
-  @apply border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-lg px-4 py-2 transition-colors;
-}
-
-.input-field {
-  @apply w-full border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-interview-blue/20;
-}
-
-.label-text {
-  @apply text-sm font-medium text-gray-600 dark:text-gray-300 mb-1;
-}
-

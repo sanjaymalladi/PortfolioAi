@@ -1,36 +1,23 @@
+
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-import { useEffect, useState } from "react";
 import { ClerkProvider } from "@clerk/clerk-react";
-import { useTheme } from "next-themes";
 import { Buffer } from 'buffer';
 window.Buffer = Buffer;
 
-const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+// Using the publishable key from env
+const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "";
+
+const rootElement = document.getElementById("root")!;
 
 if (!publishableKey) {
-  throw new Error("Missing Publishable Key")
+  console.warn("No Clerk publishable key found. Authentication features will not work.");
+  createRoot(rootElement).render(<App />);
+} else {
+  createRoot(rootElement).render(
+    <ClerkProvider publishableKey={publishableKey}>
+      <App />
+    </ClerkProvider>
+  );
 }
-
-const AppWithClerk = () => {
-    const { theme } = useTheme();
-    const [clerkTheme, setClerkTheme] = useState("light");
-  
-    useEffect(() => {
-      setClerkTheme(theme === "dark" ? "dark" : "light");
-    }, [theme]);
-  
-    return (
-      <ClerkProvider
-        publishableKey={publishableKey}
-        appearance={{
-          baseTheme: clerkTheme,
-        }}
-      >
-        <App />
-      </ClerkProvider>
-    );
-  };
-  
-  createRoot(document.getElementById("root")!).render(<AppWithClerk />);

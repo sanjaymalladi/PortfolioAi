@@ -1,14 +1,10 @@
-
 import React from 'react';
+import type { Feedback } from '../services/interviewService';
 
 interface ChatMessageProps {
   message: string;
   isUser: boolean;
-  feedback?: {
-    score: number;
-    positive: string;
-    improvement: string;
-  };
+  feedback?: Feedback;
 }
 
 const ChatMessage: React.FC<ChatMessageProps> = ({ message, isUser, feedback }) => {
@@ -19,24 +15,42 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isUser, feedback }) 
         
         {feedback && (
           <div className="mt-3 pt-3 border-t border-white/20">
-            <div className="flex items-center mb-2">
+            <div className="flex items-center mb-3">
               <span className="text-sm font-semibold mr-2">Response Score:</span>
-              <div className="flex-1 bg-white/30 h-2 rounded-full">
+              <div className="flex-1 bg-white/30 h-2.5 rounded-full overflow-hidden">
                 <div 
-                  className="h-full rounded-full bg-white" 
+                  className={`h-full rounded-full transition-all duration-300 ${
+                    feedback.score >= 75 ? 'bg-green-400' :
+                    feedback.score >= 50 ? 'bg-yellow-400' : 'bg-red-400'
+                  }`}
                   style={{ width: `${feedback.score}%` }}
                 ></div>
               </div>
               <span className="ml-2 text-sm font-bold">{feedback.score}%</span>
             </div>
             
-            <div className="space-y-1">
-              <p className="text-sm">
-                <span className="font-semibold">Strength:</span> {feedback.positive}
-              </p>
-              <p className="text-sm">
-                <span className="font-semibold">For improvement:</span> {feedback.improvement}
-              </p>
+            <div className="space-y-2">
+              {feedback.positive && (
+                <div className="bg-green-500/20 border border-green-500/30 rounded-lg p-3">
+                  <p className="text-sm">
+                    <span className="font-semibold text-green-300 flex items-center gap-1 mb-1">
+                      ✓ Strengths:
+                    </span>
+                    <span className="text-green-100">{feedback.positive}</span>
+                  </p>
+                </div>
+              )}
+              
+              {feedback.improvement && (
+                <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-3">
+                  <p className="text-sm">
+                    <span className="font-semibold text-blue-300 flex items-center gap-1 mb-1">
+                      💡 For improvement:
+                    </span>
+                    <span className="text-blue-100">{feedback.improvement}</span>
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}

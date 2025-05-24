@@ -1,73 +1,217 @@
-# Welcome to your Lovable project
+# 🎯 AI Interview Practice Platform
 
-## Project info
+An intelligent interview preparation platform powered by AI that helps job seekers practice and improve their interview skills through realistic mock interviews and personalized feedback.
 
-**URL**: https://lovable.dev/projects/d9eb60fc-3149-4d0f-be1d-251602c50c7d
+## ✨ Features
 
-## How can I edit this code?
+### 🤖 **Dual Interview Modes**
+- **Chat Interview**: Text-based Q&A with real-time feedback
+- **Video Interview**: Camera-enabled practice with speech recognition
 
-There are several ways of editing your application.
+### 🧠 **AI-Powered Intelligence**
+- **Dynamic Question Generation**: Questions tailored to your resume and job description
+- **Contextual Follow-ups**: AI analyzes previous answers to ask relevant follow-up questions
+- **Comprehensive Feedback**: Detailed analysis across multiple dimensions (clarity, relevance, STAR method, etc.)
 
-**Use Lovable**
+### 🎙️ **Advanced Speech Recognition**
+- **Gemini Audio Transcription**: High-quality AI-powered speech-to-text
+- **Real-time Processing**: Instant transcription of your spoken responses
+- **Fallback Options**: Type answers if speech recognition isn't available
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/d9eb60fc-3149-4d0f-be1d-251602c50c7d) and start prompting.
+### 📊 **Detailed Performance Analytics**
+- **Individual Question Scoring**: Get scores and feedback for each response
+- **Overall Performance Metrics**: Track improvement across multiple categories
+- **Actionable Insights**: Specific recommendations for skill improvement
+- **Progress Tracking**: See your development over time
 
-Changes made via Lovable will be committed automatically to this repo.
+### 🎨 **Modern User Experience**
+- **Dark/Light Theme Support**: Comfortable viewing in any environment
+- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
+- **Intuitive Interface**: Clean, professional design focused on usability
 
-**Use your preferred IDE**
+## 🚀 Tech Stack
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- **Frontend Framework**: React 18 with TypeScript
+- **Build Tool**: Vite for fast development and building
+- **UI Components**: shadcn/ui with Radix UI primitives
+- **Styling**: Tailwind CSS with custom theme support
+- **AI Integration**: Google Gemini for question generation and feedback
+- **Speech Recognition**: Gemini Audio API for transcription
+- **Text-to-Speech**: ElevenLabs API for natural voice synthesis
+- **PDF Processing**: Client-side PDF parsing for resume upload
+- **State Management**: React hooks and context
+- **Routing**: React Router for navigation
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 📋 Prerequisites
 
-Follow these steps:
+- **Node.js** (v18 or higher)
+- **npm** or **yarn** or **pnpm**
+- **Google Gemini API Key** (for AI features)
+- **Clerk Account** (for user authentication)
+- **ElevenLabs API Key** (optional, for TTS)
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## ⚙️ Installation & Setup
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### 1. Clone the Repository
+```bash
+git clone https://github.com/yourusername/ai-interview-practice.git
+cd ai-interview-practice
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+### 2. Install Dependencies
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### 3. Environment Configuration
+Create a `.env` file in the root directory:
+
+```env
+# Required: Google Gemini API Key
+VITE_GEMINI_API_KEY=your_gemini_api_key_here
+
+# Required: Clerk Authentication
+VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key_here
+
+# Optional: ElevenLabs API for Text-to-Speech
+VITE_ELEVEN_LABS_API_KEY=your_elevenlabs_api_key_here
+VITE_ELEVEN_LABS_VOICE_ID=voice_id_here
+
+# Optional: D-ID API for Avatar Video (Chat mode)
+VITE_DID_API_KEY=your_did_api_key_here
+```
+
+### 4. Start Development Server
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will be available at `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🎮 How to Use
 
-**Use GitHub Codespaces**
+### 1. **Sign Up/Sign In**
+- Create a free account or sign in to access all features
+- Authentication is required to save progress and access personalized features
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### 2. **Setup Your Interview**
+- Upload your resume (PDF) or paste text
+- Add the job description you're preparing for
+- Choose between Chat or Video interview mode
 
-## What technologies are used for this project?
+### 3. **Practice Interview**
+- **Chat Mode**: Type responses and get instant feedback
+- **Video Mode**: Use speech recognition or type responses
 
-This project is built with:
+### 4. **Get Detailed Feedback**
+- Receive comprehensive analysis of each answer
+- View scores across multiple evaluation criteria
+- Get specific improvement recommendations
+- See overall performance summary
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### 5. **Review & Improve**
+- Study the detailed feedback report
+- Practice weak areas identified by the AI
+- Retake interviews to track improvement
 
-## How can I deploy this project?
+## 📁 Project Structure
 
-Simply open [Lovable](https://lovable.dev/projects/d9eb60fc-3149-4d0f-be1d-251602c50c7d) and click on Share -> Publish.
+```
+src/
+├── components/          # React components
+│   ├── ui/             # Reusable UI components (shadcn/ui)
+│   ├── InterviewChat.tsx   # Main interview component
+│   ├── ChatMessage.tsx     # Message display component
+│   ├── ChatInput.tsx       # Message input component
+│   └── ...
+├── services/           # API and service functions
+│   ├── geminiService.ts    # Gemini AI integration
+│   ├── interviewService.ts # Interview logic
+│   └── hybridSpeechService.ts # Speech recognition
+├── hooks/              # Custom React hooks
+├── lib/                # Utility functions
+└── styles/             # Global styles
+```
 
-## Can I connect a custom domain to my Lovable project?
+## 🧪 Available Scripts
 
-Yes, you can!
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run lint         # Run ESLint
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🚀 Deployment
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Vercel (Recommended)
+```bash
+npm i -g vercel
+vercel --prod
+```
+
+### Netlify
+```bash
+npm run build
+# Upload dist/ folder to Netlify
+```
+
+### Manual Deployment
+```bash
+npm run build
+# Upload dist/ folder to your hosting provider
+```
+
+## 🔑 API Keys Setup
+
+### Google Gemini API
+1. Visit [Google AI Studio](https://aistudio.google.com/)
+2. Create an API key
+3. Add to `.env` as `VITE_GEMINI_API_KEY`
+
+### Clerk Authentication
+1. Sign up at [Clerk.com](https://clerk.com/)
+2. Create a new application
+3. Get your Publishable Key from the dashboard
+4. Add to `.env` as `VITE_CLERK_PUBLISHABLE_KEY`
+
+### ElevenLabs API (Optional)
+1. Sign up at [ElevenLabs](https://elevenlabs.io/)
+2. Get your API key from dashboard
+3. Add to `.env` as `VITE_ELEVEN_LABS_API_KEY`
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🐛 Issues & Support
+
+If you encounter any issues or have questions:
+- Open an issue on GitHub
+- Check existing issues for solutions
+- Provide detailed information about your environment
+
+## 🚀 Future Enhancements
+
+- [ ] User authentication and profile management
+- [ ] Interview history and progress tracking
+- [ ] Multiple AI model support
+- [ ] Custom interview question sets
+- [ ] Team collaboration features
+- [ ] Advanced analytics dashboard
+
+---
+
+**Built with ❤️ for job seekers looking to ace their interviews!**
