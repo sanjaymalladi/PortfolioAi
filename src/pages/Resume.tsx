@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +10,7 @@ import { askGemini } from '../services/geminiService';
 import { jsPDF } from 'jspdf';
 import pdfParse from 'pdf-parse-new';
 import PageLayout from '@/components/PageLayout';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
 
 const Resume = () => {
   const [resumeText, setResumeText] = useState('');
@@ -96,7 +96,53 @@ const Resume = () => {
   const getAiSuggestions = async () => {
     setIsAnalyzing(true);
     try {
-      const prompt = `Based on the following resume analysis, provide actionable AI suggestions to improve the resume.\nScore: ${score}\nStrengths: ${feedback?.strengths.join(', ')}\nImprovements: ${feedback?.improvements.join(', ')}`;
+      const prompt = `Based on the following resume analysis, provide detailed AI suggestions to improve the resume in **proper Markdown format**. Use the following structure:
+
+# Resume Improvement Suggestions
+
+## Content Enhancement
+Provide specific suggestions to improve resume content:
+- Use bullet points for each suggestion
+- **Bold** the specific areas to focus on
+- Include actionable details
+
+## Skills & Keywords Optimization
+Suggest skills and keywords to add:
+- **Technical Skills**: List missing technical skills
+- **Soft Skills**: Highlight important soft skills
+- **Industry Keywords**: Include relevant keywords for ATS optimization
+
+## Formatting & Structure Improvements
+Recommend formatting and structure changes:
+1. **Section Organization**: Specific reorganization suggestions
+2. **Content Flow**: How to improve readability
+3. **Visual Appeal**: Formatting improvements
+
+## Experience Section Enhancement
+Provide specific suggestions for work experience:
+- **Action Verbs**: Better action verbs to use
+- **Quantifiable Results**: How to add metrics and numbers
+- **Achievement Focus**: Converting duties to achievements
+
+## Education & Certifications
+Suggest improvements for education section:
+- **Relevant Coursework**: What to highlight
+- **Certifications**: Missing certifications to consider
+- **Projects**: Academic or personal projects to include
+
+## Next Steps
+Provide immediate actionable steps:
+1. **Priority 1**: Most important change to make first
+2. **Priority 2**: Second most important improvement
+3. **Priority 3**: Additional enhancements
+
+Resume Analysis Details:
+- Score: ${score}/100
+- Strengths: ${feedback?.strengths.join(', ')}
+- Areas for Improvement: ${feedback?.improvements.join(', ')}
+
+Please format your response in clean Markdown with proper headers (##), bullet points (-), numbered lists (1.), and **bold text** for emphasis. Keep suggestions specific, actionable, and professional.`;
+      
       const result = await askGemini(prompt);
       setAiSuggestions(result.trim());
     } catch (e) {
@@ -276,20 +322,20 @@ const Resume = () => {
       </div>
 
       {aiSuggestions && (
-        <Card className="mt-8 overflow-hidden border-border/40">
-          <CardHeader className="bg-muted/50">
-            <CardTitle className="flex items-center gap-2">
-              <Lightbulb className="h-5 w-5" />
-              AI Improvement Suggestions
-            </CardTitle>
-            <CardDescription>
-              Professional recommendations to enhance your resume
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="whitespace-pre-line prose dark:prose-invert max-w-none">
-              {aiSuggestions}
+        <Card className="mt-8 overflow-hidden border-border/40 shadow-lg">
+          <div className="bg-gradient-to-r from-primary/20 to-primary/10 p-4 border-b flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="bg-primary/20 p-1.5 rounded-full">
+                <Lightbulb className="h-5 w-5 text-primary" />
+              </div>
+              <h3 className="font-medium text-lg">AI Resume Improvement Suggestions</h3>
             </div>
+            <div className="text-sm text-primary/70 bg-primary/10 px-3 py-1 rounded-full">
+              Score: {score}%
+            </div>
+          </div>
+          <CardContent className="p-6 overflow-auto max-h-[600px]">
+            <MarkdownRenderer content={aiSuggestions} />
           </CardContent>
         </Card>
       )}

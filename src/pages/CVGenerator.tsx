@@ -4,17 +4,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { FileText, ArrowRight, ArrowLeft, Download, Copy, Check, Briefcase, GraduationCap, Award, User, Plus, X, Code } from 'lucide-react';
+import { FileText, ArrowRight, ArrowLeft, Briefcase, GraduationCap, Award, User, Plus, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { askGemini } from '../services/geminiService';
 import PageLayout from '@/components/PageLayout';
 import { CVData } from '@/components/ATSCVTemplate';
-import LaTeXCVTemplate from '@/components/LaTeXCVTemplate';
+import LaTeXRenderer from '@/components/LaTeXRenderer';
 
 const CVGenerator = () => {
   const [step, setStep] = useState<'form'|'preview'>('form');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [latexCopied, setLatexCopied] = useState(false);
   const { toast } = useToast();
 
   // Form data state
@@ -449,38 +448,6 @@ ${certifications.map(cert =>
 ` : ''}\\end{document}`;
   };
 
-  const handleCopyLatex = () => {
-    const latexCode = generateLatexCode();
-    navigator.clipboard.writeText(latexCode);
-    setLatexCopied(true);
-    toast({
-      title: "LaTeX Code Copied",
-      description: "LaTeX source code has been copied to clipboard",
-    });
-  };
-
-  const downloadLatexCV = () => {
-    const latexCode = generateLatexCode();
-    
-    // Create a blob with the LaTeX code
-    const blob = new Blob([latexCode], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    
-    // Create a temporary link to download
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${cvData.personalInfo.fullName.replace(/\s+/g, '_') || 'CV'}.tex`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    
-    toast({
-      title: "LaTeX File Downloaded",
-      description: "Your CV LaTeX source code has been saved.",
-    });
-  };
-
   const isFormValid = () => {
     return cvData.personalInfo.fullName && 
            cvData.personalInfo.email && 
@@ -910,32 +877,13 @@ ${certifications.map(cert =>
                 </Button>
               </div>
 
-              {/* LaTeX CV Template - No tabs, just direct display */}
-              <div className="space-y-6">
-                <div className="flex flex-wrap justify-end gap-3">
-                  <Button variant="outline" onClick={handleCopyLatex} className="flex items-center gap-1">
-                    {latexCopied ? (
-                      <>
-                        <Check className="h-4 w-4" />
-                        Copied
-                      </>
-                    ) : (
-                      <>
-                        <Code className="h-4 w-4" />
-                        Copy LaTeX Code
-                      </>
-                    )}
-                  </Button>
-                  <Button onClick={downloadLatexCV} className="flex items-center gap-1">
-                    <Download className="h-4 w-4" />
-                    Download .tex File
-                  </Button>
-                </div>
-
-                <div className="border rounded-xl overflow-hidden bg-white shadow-lg">
-                  <LaTeXCVTemplate data={cvData} />
-                </div>
-              </div>
+              {/* LaTeX Renderer - Renders visual CV + provides controls */}
+              <LaTeXRenderer
+                latexCode={generateLatexCode()}
+                title={`${cvData.personalInfo.fullName || 'CV'} - Professional Resume`}
+                enableDownload={true}
+                enableCopy={true}
+              />
             </div>
           )}
         </CardContent>

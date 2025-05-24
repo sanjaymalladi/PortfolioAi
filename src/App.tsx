@@ -14,6 +14,7 @@ import CoverLetter from "./pages/CoverLetter";
 import PortfolioBuilder from "./pages/PortfolioBuilder";
 import CVGenerator from "./pages/CVGenerator";
 import CareerCoach from "./pages/CareerCoach";
+import LaTeXDemo from "./pages/LaTeXDemo";
 import NotFound from "./pages/NotFound";
 import InterviewChat from './components/InterviewChat';
 import SpeechTestDemo from './components/SpeechTestDemo';
@@ -29,17 +30,17 @@ const App: React.FC = () => {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <TooltipProvider>
-          <ResumeProvider>
-            <Toaster />
-            <Sonner />
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <TooltipProvider>
+        <ResumeProvider>
+          <Toaster />
+          <Sonner />
             <Router>
-              <div className="min-h-screen">
-                <main>
-                  <Routes>
-                    <Route path="/" element={<Index />} />
+            <div className="min-h-screen">
+              <main>
+                <Routes>
+                  <Route path="/" element={<Index />} />
                     
                     {/* Protected Routes - Require Authentication */}
                     <Route 
@@ -114,18 +115,26 @@ const App: React.FC = () => {
                         </ProtectedRoute>
                       } 
                     />
+                    <Route 
+                      path="/latex-demo" 
+                      element={
+                        <ProtectedRoute>
+                          <LaTeXDemo />
+                        </ProtectedRoute>
+                      } 
+                    />
                     
-                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </main>
-              </div>
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </main>
+            </div>
             </Router>
-          </ResumeProvider>
-        </TooltipProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
-  );
+        </ResumeProvider>
+      </TooltipProvider>
+    </ThemeProvider>
+  </QueryClientProvider>
+);
 };
 
 export default App;
