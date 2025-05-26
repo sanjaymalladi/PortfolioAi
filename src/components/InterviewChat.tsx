@@ -56,7 +56,7 @@ const ELEVEN_LABS_API_KEY = import.meta.env.VITE_ELEVEN_LABS_API_KEY;
 const ELEVEN_LABS_API_BASE_URL = 'https://api.elevenlabs.io/v1/text-to-speech';
 const ELEVEN_LABS_VOICE_ID = import.meta.env.VITE_ELEVEN_LABS_VOICE_ID || '21m00Tcm4TlvDq8ikWAM'; // Rachel's voice
 const ELEVEN_LABS_MODEL_ID = 'eleven_multilingual_v2';
-const AVATAR_IMAGE_URL = '/interviewer.png';
+const AVATAR_IMAGE_URL = 'https://ibb.co/zhfXd6Sb';
 
 // Interview stages enum for video interview
 enum InterviewStage {
